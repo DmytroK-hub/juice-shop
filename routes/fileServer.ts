@@ -23,16 +23,16 @@ export function servePublicFiles () {
   }
 
   function verify (file: string, res: Response, next: NextFunction) {
-  file = path.basename(security.cutOffPoisonNullByte(file))
-  if (file && (endsWithAllowlistedFileType(file) || (file === 'incident-support.kdbx'))) {
+    file = path.basename(security.cutOffPoisonNullByte(file))
 
+    if (file && (endsWithAllowlistedFileType(file) || (file === 'incident-support.kdbx'))) {
       challengeUtils.solveIf(challenges.directoryListingChallenge, () => { return file.toLowerCase() === 'acquisitions.md' })
       verifySuccessfulPoisonNullByteExploit(file)
 
       res.sendFile(file, {
-  root: path.resolve('ftp'),
-  dotfiles: 'deny'
-})
+        root: path.resolve('ftp'),
+        dotfiles: 'deny'
+      })
     } else {
       res.status(403)
       next(new Error('Only .md and .pdf files are allowed!'))
